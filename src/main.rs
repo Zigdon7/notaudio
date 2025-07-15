@@ -22,7 +22,7 @@ struct ErrorResponse {
     success: bool,
 }
 
-async fn play_sound(sound_name: String) -> Result<impl warp::Reply, warp::Rejection> {
+async fn play_sound(sound_name: String) -> Result<warp::reply::WithStatus<warp::reply::Json>, warp::Rejection> {
     let sounds_dir = "sounds";
     let sound_path = format!("{}/{}", sounds_dir, sound_name);
     
@@ -71,7 +71,7 @@ async fn play_sound(sound_name: String) -> Result<impl warp::Reply, warp::Reject
     }
 }
 
-async fn list_sounds() -> Result<impl warp::Reply, warp::Rejection> {
+async fn list_sounds() -> Result<warp::reply::WithStatus<warp::reply::Json>, warp::Rejection> {
     let sounds_dir = "sounds";
     
     match fs::read_dir(sounds_dir) {
@@ -101,12 +101,15 @@ async fn list_sounds() -> Result<impl warp::Reply, warp::Rejection> {
                 error: "Unable to read sounds directory".to_string(),
                 success: false,
             };
-            Ok(warp::reply::json(&error_response))
+            Ok(warp::reply::with_status(
+                warp::reply::json(&error_response),
+                warp::http::StatusCode::INTERNAL_SERVER_ERROR,
+            ))
         }
     }
 }
 
-async fn play_default_sound() -> Result<impl warp::Reply, warp::Rejection> {
+async fn play_default_sound() -> Result<warp::reply::WithStatus<warp::reply::Json>, warp::Rejection> {
     let sounds_dir = "sounds";
     
     match fs::read_dir(sounds_dir) {

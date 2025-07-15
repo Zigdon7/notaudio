@@ -5,5 +5,18 @@
       "Bash(curl:*)"
     ],
     "deny": []
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -X POST \"http://192.168.0.78:3030/play\" -H \"Content-Type: application/json\" -d '{\"sound\": \"oven-timer.mp3\"}' --max-time 10 --silent || true"
+          }
+        ]
+      }
+    ]
   }
 }
