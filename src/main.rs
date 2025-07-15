@@ -91,7 +91,10 @@ async fn list_sounds() -> Result<impl warp::Reply, warp::Rejection> {
                 })
                 .collect();
             
-            Ok(warp::reply::json(&sounds))
+            Ok(warp::reply::with_status(
+                warp::reply::json(&sounds),
+                warp::http::StatusCode::OK,
+            ))
         }
         Err(_) => {
             let error_response = ErrorResponse {
@@ -175,13 +178,14 @@ async fn main() {
         .or(default_route)
         .with(cors);
 
-    println!("Audio server starting on http://localhost:3030");
+    println!("Audio server starting on http://0.0.0.0:3030");
+    println!("Server will be accessible from all network interfaces");
     println!("Endpoints:");
     println!("  POST /play - Play a sound file (JSON body: {{\"sound\": \"filename.wav\"}})");
     println!("  GET /play - Play the first sound file found in sounds folder");
     println!("  GET /sounds - List available sound files");
 
     warp::serve(routes)
-        .run(([127, 0, 0, 1], 3030))
+        .run(([0, 0, 0, 0], 3030))
         .await;
 }
