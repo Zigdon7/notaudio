@@ -103,6 +103,53 @@ async fn list_sounds() -> Result<impl warp::Reply, warp::Rejection> {
     }
 }
 
+async fn play_default_sound() -> Result<impl warp::Reply, warp::Rejection> {
+    let sounds_dir = "sounds";
+    
+    match fs::read_dir(sounds_dir) {
+        Ok(entries) => {
+            let first_sound = entries
+                .filter_map(|entry| {
+                    entry.ok().and_then(|e| {
+                        let path = e.path();
+                        if path.is_file() {
+                            path.file_name()
+                                .and_then(|name| name.to_str())
+                                .map(|s| s.to_string())
+                        } else {
+                            None
+                        }
+                    })
+                })
+                .next();
+            
+            match first_sound {
+                Some(sound_name) => play_sound(sound_name).await,
+                None => {
+                    let error_response = ErrorResponse {
+                        error: "No sound files found in sounds directory".to_string(),
+                        success: false,
+                    };
+                    Ok(warp::reply::with_status(
+                        warp::reply::json(&error_response),
+                        warp::http::StatusCode::NOT_FOUND,
+                    ))
+                }
+            }
+        }
+        Err(_) => {
+            let error_response = ErrorResponse {
+                error: "Unable to read sounds directory".to_string(),
+                success: false,
+            };
+            Ok(warp::reply::with_status(
+                warp::reply::json(&error_response),
+                warp::http::StatusCode::INTERNAL_SERVER_ERROR,
+            ))
+        }
+    }
+}
+
 #[tokio::main]
 async fn main() {
     let cors = warp::cors()
@@ -119,13 +166,19 @@ async fn main() {
         .and(warp::get())
         .and_then(list_sounds);
 
+    let default_route = warp::path("play")
+        .and(warp::get())
+        .and_then(play_default_sound);
+
     let routes = play_route
         .or(list_route)
+        .or(default_route)
         .with(cors);
 
     println!("Audio server starting on http://localhost:3030");
     println!("Endpoints:");
     println!("  POST /play - Play a sound file (JSON body: {{\"sound\": \"filename.wav\"}})");
+    println!("  GET /play - Play the first sound file found in sounds folder");
     println!("  GET /sounds - List available sound files");
 
     warp::serve(routes)
