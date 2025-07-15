@@ -1,6 +1,5 @@
 use std::fs;
 use std::path::Path;
-use std::sync::Arc;
 use rodio::{Decoder, OutputStream, Sink};
 use serde::{Deserialize, Serialize};
 use tokio::task;
@@ -99,10 +98,7 @@ async fn list_sounds() -> Result<impl warp::Reply, warp::Rejection> {
                 error: "Unable to read sounds directory".to_string(),
                 success: false,
             };
-            Ok(warp::reply::with_status(
-                warp::reply::json(&error_response),
-                warp::http::StatusCode::INTERNAL_SERVER_ERROR,
-            ))
+            Ok(warp::reply::json(&error_response))
         }
     }
 }

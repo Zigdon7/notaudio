@@ -1,0 +1,7 @@
+/home/zack/projects/notaudio/target/x86_64-pc-windows-gnu/release/deps/futures_sink-021c744bcd0ae9e1.d: /home/zack/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-sink-0.3.31/src/lib.rs
+
+/home/zack/projects/notaudio/target/x86_64-pc-windows-gnu/release/deps/libfutures_sink-021c744bcd0ae9e1.rlib: /home/zack/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-sink-0.3.31/src/lib.rs
+
+/home/zack/projects/notaudio/target/x86_64-pc-windows-gnu/release/deps/libfutures_sink-021c744bcd0ae9e1.rmeta: /home/zack/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-sink-0.3.31/src/lib.rs
+
+/home/zack/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-sink-0.3.31/src/lib.rs:
